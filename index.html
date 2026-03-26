@@ -11,15 +11,16 @@
 
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Ocultamos cualquier mensaje de carga o UI por defecto */
-        .mindar-ui-overlay { display: none !important; }
-        .mindar-ui-scanning { display: none !important; }
+        /* ELIMINAR CUALQUIER BOTÓN DE VR O UI */
+        .a-enter-vr, .a-enter-ar, .mindar-ui-overlay, .mindar-ui-scanning { 
+            display: none !important; 
+        }
     </style>
 </head>
 <body>
 
     <a-scene 
-        mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: no; uiLoading: no; uiError: no;" 
+        mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: no; uiLoading: no; filterMinCF: 0.0001; filterBeta: 0.001;" 
         color-space="sRGB" 
         renderer="colorManagement: true, physicallyCorrectLights" 
         vr-mode-ui="enabled: false" 
@@ -29,14 +30,14 @@
             <a-asset-item id="logoGLB" src="EtadoLogRA.glb"></a-asset-item>
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
                 src="#logoGLB" 
                 position="0 0 0.02" 
                 rotation="0 0 0" 
-                scale="0.1 0.1 0.1"
+                scale="0.08 0.08 0.08"
                 animation-mixer>
             </a-gltf-model>
         </a-entity>
