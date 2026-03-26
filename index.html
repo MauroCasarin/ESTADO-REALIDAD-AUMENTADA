@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de Coma - RA Profesional</title>
+    <title>Estado de Coma - RA con Sombra</title>
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -18,9 +18,9 @@
     </style>
 
     <script>
-        // Componente para controlar la opacidad de los materiales del GLB
+        // Componente para controlar la opacidad del modelo GLTF (necesario para la entrada triunfal)
         AFRAME.registerComponent('gltf-opacity', {
-            schema: { opacity: {type: 'number', default: 0} },
+            schema: { opacity: {type: 'number', default: 1} },
             init: function () {
                 this.el.addEventListener('model-loaded', () => this.update());
             },
@@ -43,20 +43,22 @@
     <a-scene 
         mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: no; uiLoading: no; filterMinCF: 0.0001; filterBeta: 0.001;" 
         color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights: true, exposure: 1.2" 
+        renderer="colorManagement: true, physicallyCorrectLights: true, exposure: 1.0" 
         vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
         <a-assets>
             <a-asset-item id="logoGLB" src="EtadoLogRA.glb"></a-asset-item>
             <img id="entornoTexture" src="entorno_luz.jpg">
+            <img id="shadowTexture" src="https://i.imgur.com/rNnB5YI.png">
         </a-assets>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-entity light="type: ambient; intensity: 1.8;"></a-entity>
-        <a-entity light="type: directional; intensity: 1.2; position: 1 1 1"></a-entity>
-        <a-entity light="type: directional; intensity: 1.2; position: -1 1 1"></a-entity>
+        <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
+        
+        <a-entity light="type: directional; intensity: 0.7; position: 1 1 1"></a-entity>
+        <a-entity light="type: directional; intensity: 0.7; position: -1 1 1"></a-entity>
         
         <a-sky src="#entornoTexture" visible="false"></a-sky>
 
@@ -65,7 +67,7 @@
             <a-gltf-model 
                 id="modeloLogo"
                 src="#logoGLB" 
-                position="0 0 0.01" 
+                position="0 0 0.012" 
                 rotation="0 0 0" 
                 scale="0 0 0"
                 gltf-opacity="opacity: 0"
@@ -78,6 +80,21 @@
                 animation__fade="property: gltf-opacity.opacity; to: 1; dur: 800; easing: linear; startEvents: iniciarEntrada">
             </a-gltf-model>
 
+            <a-image 
+                id="shadowPlane"
+                src="#shadowTexture" 
+                position="0 0 0.005"
+                rotation="-90 0 0"
+                scale="0 0 0"
+                opacity="0"
+                
+                /* Animación de Escala de la sombra */
+                animation__scaleShadow="property: scale; to: 0.12 0.12 0.12; dur: 800; easing: easeOutBack; startEvents: iniciarEntrada"
+                
+                /* Animación de Opacidad de la sombra (tenue, solo 0.5) */
+                animation__fadeShadow="property: opacity; to: 0.5; dur: 800; easing: linear; startEvents: iniciarEntrada">
+            </a-image>
+
         </a-entity>
         
     </a-scene>
@@ -85,17 +102,21 @@
     <script>
         const targetEntidad = document.querySelector('#targetGroup');
         const elModelo = document.querySelector('#modeloLogo');
+        const laSombra = document.querySelector('#shadowPlane');
 
         // Al detectar el logo físico
         targetEntidad.addEventListener("targetFound", () => {
-            // Disparamos las animaciones definidas en el modelo
+            // Disparamos las animaciones definidas en el modelo y en la sombra
             elModelo.emit('iniciarEntrada');
+            laSombra.emit('iniciarEntrada');
         });
 
-        // Al perder el logo de vista (opcional: reset para que vuelva a entrar al re-enfocar)
+        // Al perder el logo de vista (reset completo)
         targetEntidad.addEventListener("targetLost", () => {
             elModelo.setAttribute('scale', '0 0 0');
             elModelo.setAttribute('gltf-opacity', 'opacity', 0);
+            laSombra.setAttribute('scale', '0 0 0');
+            laSombra.setAttribute('opacity', 0);
         });
     </script>
 
