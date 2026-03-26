@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de Coma - RA</title>
+    
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
+
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Estilo para pantallas de carga o UI si fuera necesario */
+        /* Pantalla de carga simple mientras se inicia la cámara */
+        #scanning-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center;
+            align-items: center; color: white; z-index: 99; font-family: sans-serif;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
 
+    <div id="scanning-overlay">Escaneando Logo...</div>
+
     <a-scene 
-        mindar-image="imageTargetSrc: ./logo-target.mind;" 
+        mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: #scanning-overlay;" 
         color-space="sRGB" 
         renderer="colorManagement: true, physicallyCorrectLights" 
         vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
         <a-assets>
-            <img id="logoJPG" src="Estado de Coma logo.jpg">
             <a-asset-item id="logoGLB" src="EtadoLogRA.glb"></a-asset-item>
         </a-assets>
 
@@ -29,10 +41,10 @@
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
                 src="#logoGLB" 
+                position="0 0 0.05" 
                 rotation="0 0 0" 
-                position="0 0 0" 
-                scale="0.5 0.5 0.5"
-                animation="property: rotation; to: 0 360 0; dur: 5000; easing: linear; loop: true">
+                scale="1 1 1"
+                animation-mixer>
             </a-gltf-model>
         </a-entity>
         
