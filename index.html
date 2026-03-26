@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de Coma - RA</title>
+    <title>Estado de Coma - RA HDR</title>
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
 
     <style>
-        /* Eliminamos el botón VR y cualquier interfaz de MindAR */
         body { margin: 0; overflow: hidden; }
+        /* Forzamos la desaparición de CUALQUIER interfaz de VR/AR */
         .a-enter-vr, .a-enter-ar, .mindar-ui-overlay, .mindar-ui-scanning, .a-loader-title { 
             display: none !important; 
         }
@@ -28,14 +28,19 @@
         
         <a-assets>
             <a-asset-item id="logoGLB" src="EtadoLogRA.glb"></a-asset-item>
+            <img id="entornoTexture" src="entorno_luz.jpg">
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+        <a-entity environment="texture: #entornoTexture; intensity: 2.0;"></a-entity>
+        
+        <a-entity light="type: directional; intensity: 1; position: 1 1 1"></a-entity>
+
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
                 src="#logoGLB" 
-                position="0 0 0.00" 
+                position="0 0 0.01" 
                 rotation="0 0 0" 
                 scale="0.1 0.1 0.1"
                 animation-mixer>
