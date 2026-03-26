@@ -10,9 +10,9 @@
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
 
     <style>
+        /* Eliminamos el botón VR y cualquier interfaz de MindAR */
         body { margin: 0; overflow: hidden; }
-        /* ELIMINAR CUALQUIER BOTÓN DE VR O UI */
-        .a-enter-vr, .a-enter-ar, .mindar-ui-overlay, .mindar-ui-scanning { 
+        .a-enter-vr, .a-enter-ar, .mindar-ui-overlay, .mindar-ui-scanning, .a-loader-title { 
             display: none !important; 
         }
     </style>
@@ -35,9 +35,9 @@
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
                 src="#logoGLB" 
-                position="0 0 0.02" 
+                position="0 0 0.05" 
                 rotation="0 0 0" 
-                scale="0.08 0.08 0.08"
+                scale="1 1 1"
                 animation-mixer>
             </a-gltf-model>
         </a-entity>
