@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de Coma - RA HDR</title>
+    <title>Estado de Coma - RA con Brillo</title>
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -11,7 +11,7 @@
 
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Forzamos la desaparición de CUALQUIER interfaz de VR/AR */
+        /* Ocultamos cualquier interfaz de VR/AR para que quede limpio */
         .a-enter-vr, .a-enter-ar, .mindar-ui-overlay, .mindar-ui-scanning, .a-loader-title { 
             display: none !important; 
         }
@@ -22,7 +22,7 @@
     <a-scene 
         mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: no; uiLoading: no; filterMinCF: 0.0001; filterBeta: 0.001;" 
         color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights" 
+        renderer="colorManagement: true, physicallyCorrectLights: true, exposure: 1.2" 
         vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
@@ -33,9 +33,13 @@
 
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-entity environment="texture: #entornoTexture; intensity: 2.0;"></a-entity>
+        <a-entity light="type: ambient; intensity: 1.8;"></a-entity>
         
-        <a-entity light="type: directional; intensity: 1; position: 1 1 1"></a-entity>
+        <a-entity light="type: directional; intensity: 1.2; position: 1 1 1"></a-entity>
+        
+        <a-entity light="type: directional; intensity: 1.2; position: -1 1 1"></a-entity>
+
+        <a-sky src="#entornoTexture" visible="false"></a-sky>
 
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
