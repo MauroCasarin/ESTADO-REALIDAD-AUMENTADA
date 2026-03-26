@@ -7,26 +7,19 @@
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.2.0/dist/aframe-extras.min.js"></script>
 
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Pantalla de carga simple mientras se inicia la cámara */
-        #scanning-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: flex; justify-content: center;
-            align-items: center; color: white; z-index: 99; font-family: sans-serif;
-            pointer-events: none;
-        }
+        /* Ocultamos cualquier mensaje de carga o UI por defecto */
+        .mindar-ui-overlay { display: none !important; }
+        .mindar-ui-scanning { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="scanning-overlay">Escaneando Logo...</div>
-
     <a-scene 
-        mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: #scanning-overlay;" 
+        mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: no; uiLoading: no; uiError: no;" 
         color-space="sRGB" 
         renderer="colorManagement: true, physicallyCorrectLights" 
         vr-mode-ui="enabled: false" 
@@ -36,14 +29,14 @@
             <a-asset-item id="logoGLB" src="EtadoLogRA.glb"></a-asset-item>
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0">
             <a-gltf-model 
                 src="#logoGLB" 
-                position="0 0 0.05" 
+                position="0 0 0.02" 
                 rotation="0 0 0" 
-                scale="1 1 1"
+                scale="0.1 0.1 0.1"
                 animation-mixer>
             </a-gltf-model>
         </a-entity>
