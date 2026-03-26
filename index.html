@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de Coma - RA Entrada Triunfal</title>
+    <title>Estado de Coma - RA Profesional</title>
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -11,16 +11,36 @@
 
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Ocultamos cualquier interfaz de VR/AR */
+        /* Eliminación total de interfaces de VR y escaneo */
         .a-enter-vr, .a-enter-ar, .mindar-ui-overlay, .mindar-ui-scanning, .a-loader-title { 
             display: none !important; 
         }
     </style>
+
+    <script>
+        // Componente para controlar la opacidad de los materiales del GLB
+        AFRAME.registerComponent('gltf-opacity', {
+            schema: { opacity: {type: 'number', default: 0} },
+            init: function () {
+                this.el.addEventListener('model-loaded', () => this.update());
+            },
+            update: function () {
+                const mesh = this.el.getObject3D('mesh');
+                if (!mesh) return;
+                mesh.traverse((node) => {
+                    if (node.isMesh && node.material) {
+                        node.material.transparent = true;
+                        node.material.opacity = this.data.opacity;
+                        node.material.needsUpdate = true;
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
 
     <a-scene 
-        id="escena"
         mindar-image="imageTargetSrc: ./logo-target.mind; uiScanning: no; uiLoading: no; filterMinCF: 0.0001; filterBeta: 0.001;" 
         color-space="sRGB" 
         renderer="colorManagement: true, physicallyCorrectLights: true, exposure: 1.2" 
@@ -30,103 +50,52 @@
         <a-assets>
             <a-asset-item id="logoGLB" src="EtadoLogRA.glb"></a-asset-item>
             <img id="entornoTexture" src="entorno_luz.jpg">
-            
-            <a-mixin id="mixinFadeIn" 
-                     animation__fade="property: components.gltf-model.model.opaque; from: 0; to: 1; dur: 800; easing: linear; loop: false; autoplay: false;">
-            </a-mixin>
-            
-            <a-mixin id="mixinScaleIn"
-                     animation__scale="property: scale; from: 0 0 0; to: 0.1 0.1 0.1; dur: 800; easing: easeOutBack; loop: false; autoplay: false;">
-            </a-mixin>
         </a-assets>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-<<<<<<< HEAD
         <a-entity light="type: ambient; intensity: 1.8;"></a-entity>
         <a-entity light="type: directional; intensity: 1.2; position: 1 1 1"></a-entity>
         <a-entity light="type: directional; intensity: 1.2; position: -1 1 1"></a-entity>
-=======
-        <a-entity light="type: ambient; intensity: 0.5;"></a-entity>
         
-        <a-entity light="type: directional; intensity: 0.2; position: 1 1 1"></a-entity>
-        
-        <a-entity light="type: directional; intensity: 0.2; position: -1 1 1"></a-entity>
-
->>>>>>> a3d7aa530e1d0369181f2f493d289c4331043d99
         <a-sky src="#entornoTexture" visible="false"></a-sky>
 
-        <a-entity id="targetEntidad" mindar-image-target="targetIndex: 0">
+        <a-entity id="targetGroup" mindar-image-target="targetIndex: 0">
+            
             <a-gltf-model 
                 id="modeloLogo"
                 src="#logoGLB" 
                 position="0 0 0.01" 
                 rotation="0 0 0" 
                 scale="0 0 0"
-                visible="false"
+                gltf-opacity="opacity: 0"
                 animation-mixer
-                gltf-model-opaque
-                mixin="mixinFadeIn mixinScaleIn">
+                
+                /* Animación de Escala */
+                animation__scale="property: scale; to: 0.1 0.1 0.1; dur: 800; easing: easeOutBack; startEvents: iniciarEntrada"
+                
+                /* Animación de Opacidad */
+                animation__fade="property: gltf-opacity.opacity; to: 1; dur: 800; easing: linear; startEvents: iniciarEntrada">
             </a-gltf-model>
+
         </a-entity>
         
     </a-scene>
 
     <script>
-        // Componente A-Frame para manejar la opacidad del modelo GLTF (necesario)
-        AFRAME.registerComponent('gltf-model-opaque', {
-            schema: {
-                opaque: {type: 'number', default: 1}
-            },
-            init: function () {
-                var el = this.el;
-                el.addEventListener('model-loaded', function () {
-                    var model = el.getObject3D('mesh');
-                    if (model) {
-                        model.traverse(function (node) {
-                            if (node.isMesh && node.material) {
-                                node.material.transparent = true;
-                                node.material.opacity = el.getAttribute('gltf-model-opaque').opaque;
-                                node.material.needsUpdate = true;
-                            }
-                        });
-                    }
-                });
-            },
-            update: function () {
-                var el = this.el;
-                var model = el.getObject3D('mesh');
-                if (model) {
-                    model.traverse(function (node) {
-                        if (node.isMesh && node.material) {
-                            node.material.opacity = el.getAttribute('gltf-model-opaque').opaque;
-                            node.material.needsUpdate = true;
-                        }
-                    });
-                }
-            }
+        const targetEntidad = document.querySelector('#targetGroup');
+        const elModelo = document.querySelector('#modeloLogo');
+
+        // Al detectar el logo físico
+        targetEntidad.addEventListener("targetFound", () => {
+            // Disparamos las animaciones definidas en el modelo
+            elModelo.emit('iniciarEntrada');
         });
 
-        // Evento que se dispara al encontrar el logo (target index 0)
-        const target = document.querySelector('#targetEntidad');
-        const modelo = document.querySelector('#modeloLogo');
-
-        target.addEventListener("targetFound", (event) => {
-            // Hacemos visible el modelo (con escala 0 y opacidad 0)
-            modelo.setAttribute('visible', 'true');
-            // Lanzamos las animaciones de los mixins
-            modelo.components.animation__fade.play();
-            modelo.components.animation__scale.play();
-        });
-
-        // Opcional: Reiniciar el estado al perder el logo
-        target.addEventListener("targetLost", (event) => {
-             modelo.setAttribute('visible', 'false');
-             modelo.setAttribute('scale', '0 0 0');
-             modelo.setAttribute('gltf-model-opaque', 'opaque', 0);
-             // Reiniciamos las animaciones para la próxima vez
-             modelo.components.animation__fade.stop();
-             modelo.components.animation__scale.stop();
+        // Al perder el logo de vista (opcional: reset para que vuelva a entrar al re-enfocar)
+        targetEntidad.addEventListener("targetLost", () => {
+            elModelo.setAttribute('scale', '0 0 0');
+            elModelo.setAttribute('gltf-opacity', 'opacity', 0);
         });
     </script>
 
